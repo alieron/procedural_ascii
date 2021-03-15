@@ -2,9 +2,7 @@ import math
 import cv2                                      # python -m pip install opencv-python
 import numpy as np                              # python -m pip install numpy
 import time
-import multiprocessing as mp
-from tqdm import trange
-# from functools import partial
+from tqdm import trange                         # python -m pip install tqdm
 from PIL import Image, ImageDraw, ImageFont
 
 
@@ -25,15 +23,6 @@ def img_rgb_to_ascii(img, fontname, scale, char_width, char_height, fontsize):
 
     output_img = Image.new("RGB", (w * char_width, h * char_height), (0, 0, 0))
     d = ImageDraw.Draw(output_img)
-
-    # img_rgb = np.asarray(img)
-
-    # for i in range(h):
-    #     for j in range(w):
-    #         rgb = img_rgb[i, j]
-    #         gray = sum(rgb)/3
-    #         d.text((j * char_width, i * char_height),
-    #                find_char(gray), font=font, fill=tuple(rgb))
 
     img_rgb = img.load()
 
@@ -127,13 +116,3 @@ def convert_vid_from_path(video_path, output_file="output", fontname="JetBrainsM
 
 def convert_vid_from_dir(dir, output_dir="output", fontname="JetBrainsMono-Regular", scale=0.08, char_width=10, char_height=20, fontsize=15):
     pass
-
-
-start = time.time()
-
-# print(find_char(231))
-convert_img_from_path("3185f4b8-d3c2-4dbe-ae35-9c5033fbf856.jpg", scale=0.16)
-# convert_vid_from_path("Glowing_Open_Fire__Videvo.mov", scale=0.08)
-
-end = time.time()
-print(f"Total Elapsed: {round(end-start,2)} seconds")
