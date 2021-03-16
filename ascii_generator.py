@@ -2,6 +2,7 @@ import math
 import cv2                                      # python -m pip install opencv-python
 import numpy as np                              # python -m pip install numpy
 import time
+import json
 from tqdm import trange                         # python -m pip install tqdm
 from PIL import Image, ImageDraw, ImageFont
 
@@ -9,8 +10,47 @@ from PIL import Image, ImageDraw, ImageFont
 ascii_order = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'. "[::-1]
 
 
+def read_json():
+    with open("font_data.json") as f:
+        data = json.load(f)
+
+    return data["fonts"]
+
+
+def write_json(data):
+    with open("font_data.json", "w") as f:
+        json.dump(data, f, indent=2)
+
+
 def find_char(gray):
     return ascii_order[math.floor(gray * (len(ascii_order) / 256))]
+
+
+# class create_font:
+#     def __init__(self, fontname, fontsize=15):
+#         self.fontname = fontname
+#         self.fontsize=fontsize
+#     # make the character order from json
+
+
+class ASCII_Image:
+    def __init__(self, fontname="JetBrainsMono-Regular", fontsize=15):
+        # 1 check if settings already exists in json
+        data = read_json()
+        font_data = data[fontname]
+
+        supported_fontnames = font_data.keys()
+
+        if fontname in supported_fontnames:
+            supported_fonsizes = [i[1] for i in font_data[fontname]]
+
+            if fontsize in supported_fonsizes:
+                font = ImageFont.truetype("fonts\\%s.ttf" % fontname, fontsize)
+
+        # 2 creates new setting
+
+        pass
+    # take character order from json
 
 
 def img_rgb_to_ascii(img, fontname, scale, char_width, char_height, fontsize):
