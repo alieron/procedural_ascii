@@ -33,19 +33,27 @@ def find_char(gray):
 #     # make the character order from json
 
 
-class ASCII_Image:
+class ASCII_Generator:
     def __init__(self, fontname="JetBrainsMono-Regular", fontsize=15):
         # 1 check if settings already exists in json
         data = read_json()
         font_data = data[fontname]
 
         supported_fontnames = font_data.keys()
+        if fontname not in supported_fontnames:
+            init_fontname(fontname, fontsize)
 
-        if fontname in supported_fontnames:
+        else:
             supported_fonsizes = [i[1] for i in font_data[fontname]]
+            if fontsize not in supported_fonsizes:
+                init_fontsize()
 
-            if fontsize in supported_fonsizes:
-                font = ImageFont.truetype("fonts\\%s.ttf" % fontname, fontsize)
+        try:
+            self.font = ImageFont.truetype(
+                "fonts\\%s.ttf" % fontname, fontsize)
+        except FileNotFoundError:
+            print(
+                "File %s.ttf cannot be found in the font directory." % fontname)
 
         # 2 creates new setting
 
