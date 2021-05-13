@@ -23,7 +23,8 @@ from ascii_generator import ASCII_Generator
     gen.convert_vid("example.mov", output_file="example_out.mp4", scale=0.05)
 """
 
-gen = ASCII_Generator()
-gen.convert_vid("shimmer.mp4", "shimmer_out.mp4")
+gen = ASCII_Generator(mode="white")
+# gen.convert_vid("shimmer.mp4", "shimmer_out.mp4")
 # gen.convert_vid("spinning_dodecahedron.mp4", "spinning_dodecahedron_out.mp4")
 # gen.convert_img("Pilot Wallpaper.png", "Pilot Wallpaper_out.png")
+gen.convert_img("astronaut1.png", "astronaut_out1.png", scale=.2)

@@ -6,11 +6,7 @@ from tqdm import trange                         # python -m pip install tqdm
 from PIL import Image, ImageDraw, ImageFont
 
 
-ascii_order = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'. "[::-1]
-
-
-def find_char(gray):
-    return ascii_order[math.floor(gray * (len(ascii_order) / 256))]
+ascii_order = " .'`^\",:;Il!i><~+_-?][}{1)(|\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
 
 
 # class create_font:
@@ -21,28 +17,70 @@ def find_char(gray):
 
 
 class ASCII_Generator:
-    def __init__(self, mode="color"):
+    def __init__(self, mode="color", char_str=None):
         # This is where we want to start working with fonttools
         self.font = ImageFont.truetype("fonts\\JetBrainsMono-Regular.ttf", 15)
-        self.mode = mode
+        # self.mode = mode
         self.char_width = 10
         self.char_height = 20
+
+        self.mode_color = False
+        self.mode_gray = False
+        self.mode_white = False
+
+        if mode == "color":
+            self.mode_color = True
+        elif mode == "gray":
+            self.mode_gray = True
+        elif mode == "white":
+            self.mode_white = True
+
+        if not char_str:
+            self.char_str = ascii_order
+        else:
+            self.char_str = char_str
+
+    def find_char(self, gray):
+        return self.char_str[math.floor(gray * (len(self.char_str) / 256))]
 
     def _img_rgb_to_ascii(self, img_rgb, w, h, scale):
         img_rgb = img_rgb.resize((w, h), Image.ANTIALIAS)
 
-        img_out = Image.new("RGB", (w * self.char_width,
-                                    h * self.char_height), (0, 0, 0))
+        img_out = Image.new("RGB", (w * self.char_width, h * self.char_height), (0, 0, 0))
         d = ImageDraw.Draw(img_out)
 
         pix_data = img_rgb.load()
 
-        for i in range(h):
-            for j in range(w):
-                rgb = pix_data[j, i]
-                gray = sum(rgb) / 3
-                d.text((j * self.char_width, i * self.char_height),
-                       find_char(gray), font=self.font, fill=rgb)
+        if self.mode_color:
+            for i in range(h):
+                # TODO: Do the addition of the text line by line instead of character by character
+                for j in range(w):
+                    rgb = pix_data[j, i]
+                    gray = sum(rgb) / 3
+                    d.text((j * self.char_width, i * self.char_height), self.find_char(gray), font=self.font, fill=rgb)
+
+        elif self.mode_gray:
+            for i in range(h):
+                # TODO: Do the addition of the text line by line instead of character by character
+                for j in range(w):
+                    rgb = pix_data[j, i]
+                    gray = sum(rgb) / 3
+                    gray_int = int(gray)
+                    d.text(
+                        (j * self.char_width, i * self.char_height),
+                        self.find_char(gray),
+                        font=self.font, fill=(gray_int, gray_int, gray_int))
+
+        elif self.mode_white:
+            for i in range(h):
+                # TODO: Do the addition of the text line by line instead of character by character
+                for j in range(w):
+                    rgb = pix_data[j, i]
+                    gray = sum(rgb) / 3
+                    d.text(
+                        (j * self.char_width, i * self.char_height),
+                        self.find_char(gray),
+                        font=self.font, fill=(255, 255, 255))
 
         return img_out
 
@@ -51,8 +89,7 @@ class ASCII_Generator:
         output_frame_array = []
 
         w, h = frame_array[0].size
-        w, h = int(scale * w), int(scale * h *
-                                   (self.char_width / self.char_height))
+        w, h = int(scale * w), int(scale * h * (self.char_width / self.char_height))
 
         # for f in frame_array:
         #     f = Image.fromarray(f)
@@ -77,8 +114,7 @@ class ASCII_Generator:
         img_rgb = Image.open(image_path).convert("RGB")
 
         w, h = img_rgb.size
-        w, h = (int(scale * w), int(scale * h *
-                                    (self.char_width / self.char_height)))
+        w, h = (int(scale * w), int(scale * h * (self.char_width / self.char_height)))
 
         img_out = self._img_rgb_to_ascii(img_rgb, w, h, scale)
         img_out.save(output_file)
